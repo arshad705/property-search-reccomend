@@ -1,0 +1,277 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+}
+
+.chat-page h1 {
+  font-size: 1.4rem;
+  margin: 0 0 1rem;
+}
+
+.chat-history {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-right: 0.25rem;
+}
+
+.chat-turn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.chat-bubble {
+  max-width: 92%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 12px;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+.chat-bubble-role {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.6;
+  margin-bottom: 0.15rem;
+}
+
+.chat-bubble.user {
+  align-self: flex-end;
+  background: #1a56db;
+  color: white;
+}
+
+.chat-bubble.user .chat-bubble-role {
+  color: white;
+}
+
+.chat-bubble.assistant {
+  align-self: flex-start;
+  background: rgba(127, 127, 127, 0.12);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  max-width: 100%;
+}
+
+.chat-bubble-content table {
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.chat-bubble-content th,
+.chat-bubble-content td {
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.chat-bubble-content p:first-child {
+  margin-top: 0;
+}
+
+.chat-bubble-content p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-typing {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.thinking-panel {
+  align-self: flex-start;
+  max-width: 92%;
+  border: 1px solid rgba(127, 127, 127, 0.25);
+  border-radius: 10px;
+  background: rgba(127, 127, 127, 0.06);
+  font-size: 0.85rem;
+  /* overflow: hidden removed — it clipped the expanding trace list when new
+     events arrived while the panel was already open, because max-height on
+     the wrapper was already resolved and the panel's own overflow cut off
+     anything that grew beyond it. Border-radius clipping is handled below
+     on the toggle button directly instead. */
+}
+
+.thinking-panel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  /* Clip top corners to match the panel's border-radius now that the panel
+     itself no longer uses overflow: hidden. */
+  border-radius: 10px 10px 0 0;
+}
+
+.thinking-chevron {
+  display: inline-block;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.thinking-chevron.open {
+  transform: rotate(90deg);
+}
+
+.thinking-summary {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thinking-panel.active .thinking-summary::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Grid-based expand/collapse — animates open without a fixed max-height
+   ceiling, so new events arriving while expanded grow the list naturally
+   without being clipped. The inner div (min-height: 0) collapses to zero
+   when the row is 0fr, and expands to true content height at 1fr. */
+.thinking-trace-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  border-radius: 0 0 10px 10px;
+}
+
+.thinking-trace-wrapper.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  border-top: 1px solid rgba(127, 127, 127, 0.2);
+}
+
+/* Direct grid child — must have min-height: 0 and no padding so the 0fr
+   row collapses to true zero. Padding on this element would survive the
+   collapse and keep the panel taller than the toggle button alone. */
+.thinking-trace-inner {
+  min-height: 0;
+  overflow-y: auto;
+  max-height: min(400px, 50vh);
+}
+
+.thinking-trace {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.thinking-trace-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  line-height: 1.4;
+}
+
+.thinking-agent-label {
+  flex-shrink: 0;
+  min-width: 4.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.55;
+}
+
+.thinking-trace-item.done .thinking-trace-message {
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .thinking-chevron {
+    transition: transform 0.2s ease;
+  }
+  .thinking-trace-wrapper {
+    transition: grid-template-rows 0.25s ease, opacity 0.2s ease;
+  }
+
+  .thinking-panel.active .thinking-summary::before {
+    animation: thinking-pulse 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.9; }
+}
+
+.chat-error {
+  align-self: flex-start;
+  color: #b02a2a;
+  font-size: 0.9rem;
+}
+
+.chat-input-bar {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(127, 127, 127, 0.25);
+}
+
+.chat-input-bar input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  font-size: 1rem;
+}
+
+.chat-input-bar button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: #1a56db;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chat-input-bar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

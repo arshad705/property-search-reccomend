@@ -1,0 +1,16 @@
+{
+  "transactions": [
+    { "resale_price": "780000", "floor_area_sqm": "91", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "04 TO 06" },
+    { "resale_price": "788000", "floor_area_sqm": "90", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "01 TO 03" },
+    { "resale_price": "792000", "floor_area_sqm": "91", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "04 TO 06" },
+    { "resale_price": "785000", "floor_area_sqm": "92", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "01 TO 03" },
+    { "resale_price": "790000", "floor_area_sqm": "93", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "04 TO 06" },
+    { "resale_price": "782000", "floor_area_sqm": "90", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "01 TO 03" },
+    { "resale_price": "805000", "floor_area_sqm": "93", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "16 TO 18" },
+    { "resale_price": "798000", "floor_area_sqm": "93", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "13 TO 15" },
+    { "resale_price": "810000", "floor_area_sqm": "94", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "16 TO 18" },
+    { "resale_price": "820000", "floor_area_sqm": "95", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "19 TO 21" },
+    { "resale_price": "799000", "floor_area_sqm": "92", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "13 TO 15" },
+    { "resale_price": "808000", "floor_area_sqm": "94", "town": "BISHAN", "flat_type": "4 ROOM", "storey_range": "16 TO 18" }
+  ]
+}

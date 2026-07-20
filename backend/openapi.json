@@ -1,0 +1,553 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "HDB Resale Advisor Tools API",
+    "description": "FastAPI tool backend for the HDB Resale Flat Advisor watsonx Orchestrate agents.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/tools/listings": {
+      "post": {
+        "summary": "Search Listings Endpoint",
+        "description": "Search live HDB resale listings by flat type, town, max price, and optional minimum floor area.",
+        "operationId": "searchListings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/valuation": {
+      "post": {
+        "summary": "Check Valuation Endpoint",
+        "description": "Compare an asking price against HDB resale transactions from the past 5 years for the same town and flat type. Optionally pass floor_level (low/mid/high) to narrow the comparison to similar-floor units when the buyer cares about floor level.",
+        "operationId": "checkValuation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValuationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValuationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tools/geospatial": {
+      "post": {
+        "summary": "Lookup Amenities Endpoint",
+        "description": "Geocode an address and list nearby amenities (MRT, schools, hawker centres) within a radius.",
+        "operationId": "lookupAmenities",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeospatialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeospatialResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Amenity": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "distance_m": {
+            "type": "integer",
+            "title": "Distance M"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "distance_m"
+        ],
+        "title": "Amenity"
+      },
+      "Coordinates": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lng": {
+            "type": "number",
+            "title": "Lng"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lng"
+        ],
+        "title": "Coordinates"
+      },
+      "GeospatialRequest": {
+        "properties": {
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "amenity_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Amenity Types"
+          },
+          "radius_m": {
+            "type": "integer",
+            "title": "Radius M",
+            "default": 1000
+          }
+        },
+        "type": "object",
+        "required": [
+          "address",
+          "amenity_types"
+        ],
+        "title": "GeospatialRequest"
+      },
+      "GeospatialResponse": {
+        "properties": {
+          "coordinates": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "amenities": {
+            "items": {
+              "$ref": "#/components/schemas/Amenity"
+            },
+            "type": "array",
+            "title": "Amenities"
+          },
+          "amenity_summary": {
+            "type": "string",
+            "title": "Amenity Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coordinates",
+          "amenities",
+          "amenity_summary"
+        ],
+        "title": "GeospatialResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Listing": {
+        "properties": {
+          "listing_id": {
+            "type": "string",
+            "title": "Listing Id"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "flat_type": {
+            "type": "string",
+            "title": "Flat Type"
+          },
+          "asking_price": {
+            "type": "integer",
+            "title": "Asking Price"
+          },
+          "floor_area_sqm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Area Sqm"
+          },
+          "storey_range": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Storey Range"
+          },
+          "town": {
+            "type": "string",
+            "title": "Town"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "nearest_mrt_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nearest Mrt Name"
+          },
+          "nearest_mrt_distance_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nearest Mrt Distance M"
+          },
+          "listing_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Url"
+          },
+          "floor_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "listing_id",
+          "address",
+          "flat_type",
+          "asking_price",
+          "town",
+          "coordinates"
+        ],
+        "title": "Listing"
+      },
+      "ListingSearchRequest": {
+        "properties": {
+          "flat_type": {
+            "type": "string",
+            "title": "Flat Type"
+          },
+          "town": {
+            "type": "string",
+            "title": "Town"
+          },
+          "max_price": {
+            "type": "integer",
+            "title": "Max Price"
+          },
+          "min_floor_area_sqm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Floor Area Sqm"
+          },
+          "floor_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Level"
+          },
+          "bedrooms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bedrooms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "flat_type",
+          "town",
+          "max_price"
+        ],
+        "title": "ListingSearchRequest"
+      },
+      "ListingSearchResponse": {
+        "properties": {
+          "listings": {
+            "items": {
+              "$ref": "#/components/schemas/Listing"
+            },
+            "type": "array",
+            "title": "Listings"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "cache",
+              "live",
+              "fixture"
+            ],
+            "title": "Source"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "title": "Retrieved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "listings",
+          "source",
+          "retrieved_at"
+        ],
+        "title": "ListingSearchResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "ValuationRequest": {
+        "properties": {
+          "town": {
+            "type": "string",
+            "title": "Town"
+          },
+          "flat_type": {
+            "type": "string",
+            "title": "Flat Type"
+          },
+          "floor_area_sqm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Area Sqm"
+          },
+          "asking_price": {
+            "type": "integer",
+            "title": "Asking Price"
+          },
+          "floor_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "town",
+          "flat_type",
+          "asking_price"
+        ],
+        "title": "ValuationRequest"
+      },
+      "ValuationResponse": {
+        "properties": {
+          "median_transacted_price": {
+            "type": "integer",
+            "title": "Median Transacted Price"
+          },
+          "comparable_transactions": {
+            "type": "integer",
+            "title": "Comparable Transactions"
+          },
+          "valuation_verdict": {
+            "type": "string",
+            "enum": [
+              "fairly_priced",
+              "overpriced",
+              "underpriced",
+              "insufficient_data"
+            ],
+            "title": "Valuation Verdict"
+          },
+          "premium_pct": {
+            "type": "number",
+            "title": "Premium Pct"
+          },
+          "lookback_years": {
+            "type": "integer",
+            "title": "Lookback Years"
+          },
+          "floor_level_matched": {
+            "type": "boolean",
+            "title": "Floor Level Matched"
+          }
+        },
+        "type": "object",
+        "required": [
+          "median_transacted_price",
+          "comparable_transactions",
+          "valuation_verdict",
+          "premium_pct",
+          "lookback_years",
+          "floor_level_matched"
+        ],
+        "title": "ValuationResponse"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://curtain-driveway-chump.ngrok-free.dev"
+    }
+  ]
+}
