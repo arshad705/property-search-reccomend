@@ -1,0 +1,59 @@
+{
+  "listings": [
+    {
+      "listing_id": "99co-10234567",
+      "address": "170 Bishan Street 13",
+      "flat_type": "4-room",
+      "asking_price": 820000,
+      "floor_area_sqm": 93,
+      "storey_range": "10 TO 12",
+      "floor_level": "mid",
+      "town": "Bishan",
+      "coordinates": { "lat": 1.3536, "lng": 103.8486 }
+    },
+    {
+      "listing_id": "99co-10234568",
+      "address": "151 Bishan Street 11",
+      "flat_type": "4-room",
+      "asking_price": 798000,
+      "floor_area_sqm": 91,
+      "storey_range": "04 TO 06",
+      "floor_level": "low",
+      "town": "Bishan",
+      "coordinates": { "lat": 1.3520, "lng": 103.8500 }
+    },
+    {
+      "listing_id": "99co-10234569",
+      "address": "185 Bishan Street 13",
+      "flat_type": "4-room",
+      "asking_price": 845000,
+      "floor_area_sqm": 95,
+      "storey_range": "16 TO 18",
+      "floor_level": "high",
+      "town": "Bishan",
+      "coordinates": { "lat": 1.3543, "lng": 103.8479 }
+    },
+    {
+      "listing_id": "99co-20345001",
+      "address": "18 Sin Ming Walk",
+      "flat_type": "condo",
+      "asking_price": 1680000,
+      "floor_area_sqm": 110,
+      "storey_range": null,
+      "floor_level": "mid",
+      "town": "Bishan",
+      "coordinates": { "lat": 1.3601, "lng": 103.8332 }
+    },
+    {
+      "listing_id": "99co-20345002",
+      "address": "6 Bishan Street 15",
+      "flat_type": "executive-condo",
+      "asking_price": 1450000,
+      "floor_area_sqm": 105,
+      "storey_range": null,
+      "floor_level": "high",
+      "town": "Bishan",
+      "coordinates": { "lat": 1.3529, "lng": 103.8511 }
+    }
+  ]
+}

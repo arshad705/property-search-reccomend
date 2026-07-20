@@ -1,0 +1,14 @@
+{
+  "coordinates": { "lat": 1.3536, "lng": 103.8486 },
+  "amenities": [
+    { "name": "Bishan MRT", "type": "mrt", "distance_m": 420 },
+    { "name": "Marymount MRT", "type": "mrt", "distance_m": 890 },
+    { "name": "Catholic High School", "type": "school", "distance_m": 350 },
+    { "name": "Bishan Park Hawker Centre", "type": "hawker_centre", "distance_m": 610 },
+    { "name": "7-Eleven Bishan St 13", "type": "convenience_store", "distance_m": 180 },
+    { "name": "Junction 8", "type": "shopping_mall", "distance_m": 540 },
+    { "name": "Masjid An-Naeem", "type": "mosque", "distance_m": 780 },
+    { "name": "Faith Methodist Church", "type": "church", "distance_m": 820 },
+    { "name": "Sri Vairavimada Kaliamman Temple", "type": "temple", "distance_m": 940 }
+  ]
+}
