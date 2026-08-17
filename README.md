@@ -54,14 +54,44 @@ The backend exposes the tool endpoints as an OpenAPI spec imported into watsonx 
 
 ### Local tools required
 
-- **Python 3.11+**
-- **Node.js 18+**
-- **Docker** (for PostgreSQL)
+- **Docker** — runs the whole stack (Postgres, backend, frontend). If you'd rather run backend/frontend natively, you'll also need:
+  - **Python 3.11+**
+  - **Node.js 18+**
 - **watsonx Orchestrate ADK CLI** — `pip install ibm-watsonx-orchestrate` — for importing agents and tools
 
 ---
 
-## Setup
+## Quick start with Docker
+
+The full stack — Postgres, FastAPI backend, React frontend — runs as three Docker Compose services, no local Python/Node install required.
+
+```bash
+git clone <repo-url>
+cd project-property-recommendation
+
+cp backend/.env.example backend/.env      # optional — fill in API keys, or leave USE_FIXTURES=true
+cp frontend/.env.example frontend/.env    # optional — defaults already match the Docker port mapping
+
+docker compose up --build
+```
+
+Open **http://localhost:5173**. The backend is reachable at **http://localhost:8001** (used for `ngrok http 8001` in [step 4](#4-import-agents-and-tools-into-watsonx-orchestrate) below).
+
+`docker compose up` auto-merges `docker-compose.override.yml`, which gives hot-reloading dev containers: backend source is mounted in with `uvicorn --reload`, and the frontend runs the Vite dev server instead of a static build — edit code on your host and both pick it up live.
+
+For a production-style run instead (built static frontend served by nginx, backend without `--reload`, no source mounts):
+
+```bash
+docker compose -f docker-compose.yml up --build
+```
+
+To run only Postgres in Docker and everything else natively, see the manual setup below.
+
+---
+
+## Manual setup (run services natively)
+
+Use this if you want to debug the backend/frontend directly on your host instead of in containers.
 
 ### 1. Clone and install dependencies
 
@@ -86,8 +116,10 @@ npm install
 
 ### 2. Start PostgreSQL
 
+`docker-compose.yml` also defines `backend` and `frontend` services now (see [Quick start with Docker](#quick-start-with-docker) above) — to start Postgres only, name the service explicitly:
+
 ```bash
-docker compose up -d
+docker compose up -d postgres
 ```
 
 This starts a PostgreSQL instance on port `5433` used for caching API responses.
@@ -187,7 +219,7 @@ All tests run in fixture mode (no live API calls, no external dependencies).
 | Valuation data | data.gov.sg HDB resale transactions |
 | Amenities | Google Places API (New) + Geocoding API |
 | Real-time events | Server-Sent Events (SSE) |
-| Containerisation | Docker Compose (PostgreSQL) |
+| Containerisation | Docker Compose (Postgres, backend, frontend; hot-reload dev override) |
 
 ---
 

@@ -1,0 +1,33 @@
+# Auto-merged by `docker compose up` alongside docker-compose.yml — gives
+# hot-reloading dev containers by default (source mounted in, uvicorn
+# --reload, vite dev server). This is the default because day-to-day work on
+# this repo is local coding, not deployment.
+#
+# For a production-style run (built image, no live reload, no source mounts):
+#   docker compose -f docker-compose.yml up --build
+services:
+  backend:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/fixtures:/app/fixtures
+    healthcheck:
+      # --reload restarts the process on every source save, which can trip a
+      # health check mid-restart. depends_on below no longer needs it.
+      disable: true
+
+  frontend:
+    build:
+      target: dev
+    environment:
+      # Vite dev server exposes any VITE_-prefixed process env var to
+      # import.meta.env automatically — no .env file needed in the container.
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8001}
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+    depends_on:
+      backend:
+        condition: service_started
