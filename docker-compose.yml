@@ -5,12 +5,60 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: hdb_advisor
-      POSTGRES_PASSWORD: hdb_advisor
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hdb_advisor}
       POSTGRES_DB: hdb_advisor
     ports:
       - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hdb_advisor -d hdb_advisor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: hdb-advisor-backend
+    restart: unless-stopped
+    env_file:
+      # Optional: `cp backend/.env.example backend/.env` and fill in API keys.
+      # Missing entirely is fine — Settings() defaults (USE_FIXTURES=true) apply.
+      - path: ./backend/.env
+        required: false
+    environment:
+      # Overrides backend/.env's localhost:5433 value. Inside the Compose
+      # network Postgres is reachable at the `postgres` service name on its
+      # internal port 5432 — 5433 is only the host-side mapping.
+      DATABASE_URL: postgresql+psycopg2://hdb_advisor:${POSTGRES_PASSWORD:-hdb_advisor}@postgres:5432/hdb_advisor
+    ports:
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Baked into the static bundle at build time (Vite convention) — the
+        # browser hits this host-mapped URL directly, not the Docker network,
+        # so it must match backend's published port below (8001).
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8001}
+    container_name: hdb-advisor-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
 
 volumes:
   postgres-data:
